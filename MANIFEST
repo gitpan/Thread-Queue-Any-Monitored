@@ -1,0 +1,8 @@
+MANIFEST
+CHANGELOG
+README
+TODO
+VERSION
+Makefile.PL
+lib/Thread/Queue/Any/Monitored.pm
+t/Queue-Any-Monitored.t
