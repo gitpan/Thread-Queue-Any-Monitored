@@ -5,7 +5,7 @@ package Thread::Queue::Any::Monitored;
 # Make sure we do everything by the book from now on
 
 @ISA = qw(Thread::Queue::Any);
-$VERSION = '0.03';
+$VERSION = '0.04';
 use strict;
 
 # Make sure we have super duper queues
@@ -20,7 +20,7 @@ use Thread::Queue::Monitored ();
 
 {
  no strict 'refs';
- foreach (qw(new dequeue dequeue_nb _makecoderef)) {
+ foreach (qw(new dequeue dequeue_dontwait dequeue_nb _makecoderef)) {
      *$_ = \&{"Thread::Queue::Monitored::$_"};
  }
 }
