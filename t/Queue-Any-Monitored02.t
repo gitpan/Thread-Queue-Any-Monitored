@@ -6,7 +6,7 @@ BEGIN {				# Magic Perl CORE pragma
 }
 
 use strict;
-use Test::More tests => 7;
+use Test::More tests => 8;
 
 BEGIN { use_ok('threads') }
 BEGIN { use_ok('Thread::Queue::Any::Monitored') }
@@ -23,6 +23,7 @@ my ($q,$t) = Thread::Queue::Any::Monitored->new(
               $object = ref(Thread::Queue::Any::Monitored->self);
              },
   monitor => sub { print $handle (%{$_[0]}) },
+  post => sub { close( $handle ); return 'anydone' },
  },
  $file
 );
@@ -35,7 +36,7 @@ my $pending = $q->pending;
 ok( $pending >= 0 and $pending <= $times, 'check number of values on queue' );
 
 $q->enqueue( undef ); # stop monitoring
-$t->join;             # automatically closes file
+is( $t->join,'anydone',			'check result of join' );
 
 is( $object,'Thread::Queue::Any::Monitored', 'check result of ->self' );
 

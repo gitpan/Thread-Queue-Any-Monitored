@@ -1,3 +1,8 @@
+0.03	18 July 2002
+	Added support for "post" routine, so that a routine will be executed
+	when monitoring stops.  Results of the "post" routine are available
+	with the "join" method on the thread object.
+
 0.02	17 July 2002
 	Added class method "self" for use within the "pre" or "monitor"
 	routine the Thread::Queue::Any::Monitored object they're working for.

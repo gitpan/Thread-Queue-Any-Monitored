@@ -5,7 +5,7 @@ package Thread::Queue::Any::Monitored;
 # Make sure we do everything by the book from now on
 
 @ISA = qw(Thread::Queue::Any);
-$VERSION = '0.02';
+$VERSION = '0.03';
 use strict;
 
 # Make sure we have super duper queues
@@ -52,6 +52,9 @@ sub self { $SELF } #self
 #      2 flag: to keep thread attached
 #      3 code reference of monitoring routine
 #      4 exit value
+#      5 code reference of post routine
+#      6 code reference of pre routine
+#      7..N any parameters passed to new
 
 sub _monitor {
 
@@ -65,9 +68,11 @@ sub _monitor {
     my $monitor = shift;
     my $exit = shift;
 
+# Obtain the post subroutine reference or create one
 # Obtain the preparation subroutine reference
 # Execute the preparation routine if there is one
 
+    my $post = shift || sub {};
     my $pre = shift;
     $pre->( @_ ) if $pre;
 
@@ -91,10 +96,10 @@ sub _monitor {
 #   Obtain the actual values that are frozen in the value
 #   Return now if so indicated
 #   Call the monitoring routine with all the values
-	
-        foreach (@value) {
-	    my @set = @{Storable::thaw( $_ )};
-            return if $set[0] eq $exit;
+
+        foreach my $value (@value) {
+	    my @set = @{Storable::thaw( $value )};
+            return $post->( @_ ) if $set[0] eq $exit;
             $monitor->( @set );
         }
     }
@@ -115,6 +120,7 @@ Thread::Queue::Any::Monitored - monitor a queue for any specific content
      {
       monitor => sub { print "monitoring value $_[0]\n" }, # is a must
       pre => sub { print "prepare monitoring\n" },         # optional
+      post => sub { print "stop monitoring\n" },           # optional
       queue => $queue, # use existing queue, create new if not specified
       exit => 'exit',  # default to undef
      }
@@ -123,9 +129,9 @@ Thread::Queue::Any::Monitored - monitor a queue for any specific content
     $q->enqueue( "foo",['listref'],{'hashref'} );
     $q->enqueue( undef ); # exit value by default
 
-    $t->join; # optional, wait for monitor thread to end
+    @post = $t->join; # optional, wait for monitor thread to end
 
-    $queue = Thread::Queue::Any::Monitored->self; # in "pre" and "do" only
+    $queue = Thread::Queue::Any::Monitored->self; # "pre", "do", "post"
 
 =head1 DESCRIPTION
 
@@ -161,6 +167,7 @@ Any number of threads can safely add sets of values to the end of the list.
   {
    pre => \&pre,
    monitor => 'monitor',
+   post => \&module::post,
    queue => $queue, # use existing queue, create new if not specified
    exit => 'exit',  # default to undef
   }
@@ -239,6 +246,33 @@ name of a subroutine or as a reference to a (anonymous) subroutine.
 The specified subroutine should expect the following parameters to be passed:
 
  1..N  any extra parameters that were passed with the call to L<new>.
+
+=item post
+
+ post => 'stop_monitoring',		# assume caller's namespace
+
+or:
+
+ post => 'Package::stop_monitoring',
+
+or:
+
+ post => \&SomeOther::stop_monitoring,
+
+or:
+
+ post => sub {print "anonymous sub when stopping the monitoring\n"},
+
+The "post" field specifies the subroutine to be executed once when the
+monitoring of the queue is stopped.  It must be specified as either the
+name of a subroutine or as a reference to a (anonymous) subroutine.
+
+The specified subroutine should expect the following parameters to be passed:
+
+ 1..N  any parameters that were passed with the call to L<new>.
+
+Any values returned by the "post" routine, can be obtained with the C<join>
+method on the thread object.
 
 =item queue
 
