@@ -5,7 +5,7 @@ package Thread::Queue::Any::Monitored;
 # Make sure we do everything by the book from now on
 
 @ISA = qw(Thread::Queue::Any);
-$VERSION = '0.06';
+$VERSION = '0.07';
 use strict;
 
 # Make sure we have super duper queues
@@ -316,6 +316,11 @@ monitoring.  It is available within the "pre" and "do" subroutine only.
 The C<enqueue> method adds all specified parameters as a set on to the end
 of the queue.  The queue will grow as needed to accommodate the list.  If the
 "exit" value is passed, then the monitoring thread will shut itself down.
+
+=head1 REQUIRED MODULES
+
+ Thread::Queue::Any (0.06)
+ Thread::Queue::Monitored (0.07)
 
 =head1 CAVEATS
 
