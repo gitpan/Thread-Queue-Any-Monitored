@@ -7,3 +7,4 @@ Makefile.PL
 lib/Thread/Queue/Any/Monitored.pm
 t/Queue-Any-Monitored01.t
 t/Queue-Any-Monitored02.t
+META.yml                                Module meta-data (added by MakeMaker)

@@ -6,6 +6,7 @@ BEGIN {				# Magic Perl CORE pragma
 }
 
 use strict;
+use warnings;
 use Test::More tests => 3+(2*4);
 
 BEGIN { use_ok('threads') }
@@ -14,6 +15,7 @@ BEGIN { use_ok('Thread::Queue::Any::Monitored') }
 can_ok( 'Thread::Queue::Monitored',qw(
  dequeue
  dequeue_dontwait
+ dequeue_keep
  dequeue_nb
  enqueue
  new
@@ -46,7 +48,7 @@ sub check {
 
   $q->enqueue( [$_,$_+1] ) foreach 1..$times;
   my $pending = $q->pending;
-  ok( $pending >= 0 and $pending <= $times, 'check number of values on queue' );
+  ok( ($pending >= 0 and $pending <= $times), 'check number of values on queue' );
 
   $q->enqueue( $exit ); # stop monitoring
   $t->join;
