@@ -1,11 +1,11 @@
 package Thread::Queue::Any::Monitored;
 
-# Make sure we inherit from threads::shared::queue
+# Make sure we inherit from Thread::Queue::Any
 # Make sure we have version info for this module
 # Make sure we do everything by the book from now on
 
-@ISA = qw(Thread::Queue::Any);
-$VERSION = '0.04';
+our @ISA : unique = qw(Thread::Queue::Any);
+our $VERSION : unique = '0.05';
 use strict;
 
 # Make sure we have super duper queues
@@ -20,7 +20,7 @@ use Thread::Queue::Monitored ();
 
 {
  no strict 'refs';
- foreach (qw(new dequeue dequeue_dontwait dequeue_nb _makecoderef)) {
+ foreach (qw(new dequeue dequeue_dontwait dequeue_nb dequeue_keep _makecoderef)) {
      *$_ = \&{"Thread::Queue::Monitored::$_"};
  }
 }
@@ -94,12 +94,19 @@ sub _monitor {
 
 #  For all of the values just obtained
 #   Obtain the actual values that are frozen in the value
-#   Return now if so indicated
+#   If there is a defined exit value
+#    Return now with result of post() if so indicated
+#   Elsif found value is not defined (so same as exit value)
+#    Return now with result of post()
 #   Call the monitoring routine with all the values
 
         foreach my $value (@value) {
 	    my @set = @{Storable::thaw( $value )};
-            return $post->( @_ ) if $set[0] eq $exit;
+            if (defined($exit)) {
+                return $post->( @_ ) if $set[0] eq $exit;
+            } elsif (!defined( $set[0] )) {
+                return $post->( @_ );
+            }
             $monitor->( @set );
         }
     }
@@ -313,8 +320,8 @@ of the queue.  The queue will grow as needed to accommodate the list.  If the
 =head1 CAVEATS
 
 You cannot remove any values from the queue, as that is done by the monitoring
-thread.  Therefore, the methods "dequeue" and "dequeue_nb" are disabled on
-this object.
+thread.  Therefore, the methods "dequeue", "dequeue_dontwait" and
+"dequeue_keep" are disabled on this object.
 
 Passing unshared values between threads is accomplished by serializing the
 specified values using C<Storable> when enqueuing and de-serializing the queued
