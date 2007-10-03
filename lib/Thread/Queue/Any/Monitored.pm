@@ -5,7 +5,7 @@ package Thread::Queue::Any::Monitored;
 # Make sure we do everything by the book from now on
 
 @ISA = qw(Thread::Queue::Any);
-$VERSION = '0.07';
+$VERSION = '0.08';
 use strict;
 
 # Make sure we have super duper queues
@@ -139,6 +139,10 @@ Thread::Queue::Any::Monitored - monitor a queue for any specific content
     @post = $t->join; # optional, wait for monitor thread to end
 
     $queue = Thread::Queue::Any::Monitored->self; # "pre", "do", "post"
+
+=head1 VERSION
+
+This documentation describes version 0.08.
 
 =head1 DESCRIPTION
 
@@ -342,7 +346,7 @@ Please report bugs to <perlbugs@dijkmat.nl>.
 
 =head1 COPYRIGHT
 
-Copyright (c) 20022003 Elizabeth Mattijsen <liz@dijkmat.nl>. All rights
+Copyright (c) 2002,2003,2007 Elizabeth Mattijsen <liz@dijkmat.nl>. All rights
 reserved.  This program is free software; you can redistribute it and/or
 modify it under the same terms as Perl itself.
 

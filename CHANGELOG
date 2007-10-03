@@ -1,3 +1,10 @@
+0.08    3 October 2007
+        Hopefully fixed test-suite for none thread enabled Perls.  Updated
+        to use new VERSION feature of Devel::Required.
+
+	28 January 2004
+	Made sure the test-suite cleans up on multi-versioned systems.
+
 0.07	28 December 2003
 	Added automatic required modules update using Devel::Required.
 

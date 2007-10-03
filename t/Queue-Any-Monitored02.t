@@ -7,7 +7,7 @@ BEGIN {				# Magic Perl CORE pragma
 
 use strict;
 use warnings;
-use Test::More tests => 8;
+use Test::More tests => 9;
 
 BEGIN { use_ok('threads') }
 BEGIN { use_ok('Thread::Queue::Any::Monitored') }
@@ -47,4 +47,5 @@ open( my $in,"<$file" ) or die "Could not open file $!";
 is( join('',<$in>), $check,		'check whether monitoring ok' );
 close( $in );
 
-unlink( $file );
+is( unlink( $file ),'1',"Check if cleanup successful" );
+1 while unlink $file; # multi-versioned filesystems
