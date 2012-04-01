@@ -1,5 +1,8 @@
+0.09	1 April 2012
+	Some code refactoring and code esthetics.  Verified it runs on 5.14.2.
+
 0.08    3 October 2007
-        Hopefully fixed test-suite for none thread enabled Perls.  Updated
+        Hopefully fixed test-suite for non-thread enabled Perls.  Updated
         to use new VERSION feature of Devel::Required.
 
 	28 January 2004
