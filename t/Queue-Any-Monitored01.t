@@ -12,7 +12,7 @@ use Test::More tests => 3+(2*4);
 BEGIN { use_ok('threads') }
 BEGIN { use_ok('Thread::Queue::Any::Monitored') }
 
-can_ok( 'Thread::Queue::Monitored',qw(
+can_ok( 'Thread::Queue::Any::Monitored',qw(
  dequeue
  dequeue_dontwait
  dequeue_keep

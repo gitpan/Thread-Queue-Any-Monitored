@@ -1,33 +1,32 @@
 require 5.008;
 
-# do we have threads?
-my $module;
-BEGIN {
-    $module = "Thread::Queue::Any::Monitored";
+# do we have threads or forks??
+BEGIN { eval "use Devel::ThreadsForks"  || do 'threadsforks' } #BEGIN;
 
-    require Config;
-    Config->import;
-
-    if ( !$Config{useithreads} ) {
-        print "$module requires a version of perl that has threads enabled.\n";
-        exit 0;
-    }
-}
-
-# set up stuff
-use ExtUtils::MakeMaker;
+# make sure we have the right code path
+our $LIB_TREE= 'Thread/Queue/Any';
+our $REQUIRED= '5.014';
+eval "use Devel::MaintBlead; 1" || do 'maintblead';
 
 # set version and dependency info
-eval "use Devel::Required";
+use ExtUtils::MakeMaker;
+eval "use Devel::Required maint_blead => $REQUIRED";
+
+# set up prerequisites
+my @prereq_pm= (
+  'Thread::Queue::Any'       => $MAINT ? '0.13' : '1.11',
+  'Thread::Queue::Monitored' => $MAINT ? '0.12' : '1.02',
+);
+push @prereq_pm, (
+  'Test::More' => 0.88,
+) if !$MAINT;
 
 # set up
 WriteMakefile (
- NAME		=> $module,
- AUTHOR		=> 'Elizabeth Mattijsen (liz@dijkmat.nl)',
- ABSTRACT	=> 'monitor a queue for any specific content',
- VERSION_FROM	=> 'lib/Thread/Queue/Any/Monitored.pm',
- PREREQ_PM	=> {
-                    'Thread::Queue::Any' => '0.06',
-                    'Thread::Queue::Monitored' => '0.07',
-                   },
+ NAME         => "Thread::Queue::Any::Monitored",
+ AUTHOR       => 'Elizabeth Mattijsen (liz@dijkmat.nl)',
+ ABSTRACT     => 'monitor a queue for any specific content',
+ VERSION_FROM => 'lib/Thread/Queue/Any/Monitored.pm',
+ LICENSE      => 'perl',
+ PREREQ_PM    => { @prereq_pm },
 );
