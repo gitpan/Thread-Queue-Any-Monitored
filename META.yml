@@ -1,21 +1,24 @@
---- #YAML:1.0
-name:               Thread-Queue-Any-Monitored
-version:            0.10
-abstract:           monitor a queue for any specific content
+---
+abstract: 'monitor a queue for any specific content'
 author:
-    - Elizabeth Mattijsen (liz@dijkmat.nl)
-license:            perl
-distribution_type:  module
+  - 'Elizabeth Mattijsen (liz@dijkmat.nl)'
+build_requires:
+  ExtUtils::MakeMaker: 0
 configure_requires:
-    ExtUtils::MakeMaker:  0
-requires:
-    Thread::Queue::Any:   0.13
-    Thread::Queue::Monitored:  0.12
-no_index:
-    directory:
-        - t
-        - inc
-generated_by:       ExtUtils::MakeMaker version 6.48
+  ExtUtils::MakeMaker: 0
+dynamic_config: 1
+generated_by: 'ExtUtils::MakeMaker version 6.6302, CPAN::Meta::Converter version 2.120630'
+license: perl
 meta-spec:
-    url:      http://module-build.sourceforge.net/META-spec-v1.4.html
-    version:  1.4
+  url: http://module-build.sourceforge.net/META-spec-v1.4.html
+  version: 1.4
+name: Thread-Queue-Any-Monitored
+no_index:
+  directory:
+    - t
+    - inc
+requires:
+  Test::More: 0.88
+  Thread::Queue::Any: 1.11
+  Thread::Queue::Monitored: 1.02
+version: 1.00
