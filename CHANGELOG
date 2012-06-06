@@ -1,4 +1,4 @@
-1.02    5 June 2012
+1.02    6 June 2012
         Fixed problem in test-suite that hard depended on Thread::Serialize
         being installed.  Spotted by Chris Williams (BINGOS) through
         CPAN-Testers.
