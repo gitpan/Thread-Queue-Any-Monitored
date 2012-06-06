@@ -1,3 +1,17 @@
+1.02    5 June 2012
+        Fixed problem in test-suite that hard depended on Thread::Serialize
+        being installed.  Spotted by Chris Williams (BINGOS) through
+        CPAN-Testers.
+
+        Also implemented some code esthetics suggestions made at last night's
+        Amsterdam PM meeting, both in maint and blead version.
+
+        Updated threadsforks / maintblead logic to latest and greatest.
+
+        Upped the maint version to 0.12, because the monitor logic now has
+        two extended code paths for defined and undefined exit values.  This
+        should give a noticeable performance improvement.
+
 1.01    4 June 2012
         Upgraded to Devel::ThreadsForks 0.05 and Devel::MaintBlead 0.04.
         Also upgraded the maint version to 0.11.

@@ -16,7 +16,10 @@ BEGIN {
 } #BEGIN
 
 # modules that we need
-use Thread::Queue::Any::Monitored serializer => 'Thread::Serialize';
+use Thread::Queue::Any::Monitored
+  serializer => eval "use Thread::Serialize"
+    ? 'Thread::Serialize'
+    : 'Storable';
 use Test::More;
 
 diag "threads loaded" if $Loaded{threads};
