@@ -17,11 +17,12 @@ All rights reserved.  This program is free software; you can redistribute it
 and/or modify it under the same terms as Perl itself.
 
 Version:
- 0.13
+ 1.03
 
 Required Modules:
- Thread::Queue::Any (0.16)
- Thread::Queue::Monitored (0.14)
+ Test::More (0.88)
+ Thread::Queue::Any (1.13)
+ Thread::Queue::Monitored (1.04)
 
 Installation:
 This distribution contains two versions of the code: one maintenance version

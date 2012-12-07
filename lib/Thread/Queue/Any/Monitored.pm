@@ -1,11 +1,13 @@
-package Thread::Queue::Any::Monitored;
+use 5.014;
+#package Thread::Queue::Any::Monitored '1.03'; # not at PAUSE or MetaCPAN :-(
+package Thread::Queue::Any::Monitored;  # please remove if no longer needed
 
 # initializations
-@ISA=     qw( Thread::Queue::Any );
-$VERSION= '0.13';
+our @ISA= qw( Thread::Queue::Any );
+our $VERSION= '1.03';                   # please remove if no longer needed
 
-# be as strict as possible
-use strict;
+# be as verbose as possible
+use warnings;
 
 # modules that we need
 use Thread::Queue::Any ();
@@ -35,10 +37,6 @@ my $SELF;
 # Class methods
 #
 #-------------------------------------------------------------------------------
-# self
-#
-# return our singleton
-#
 #  IN: 1 class (ignored)
 # OUT: 1 instantiated queue object
 
@@ -71,59 +69,34 @@ sub _monitor {
     # execute any pre code
     my $post= shift || sub {};
     my $pre=  shift;
-    $pre->( @_ )
+    $pre->(@_)
       if $pre;
 
-    # exit value is a defined value
+    # make sure we have the thaw hook
+    state $THAW= $queue->THAW;
+
+    # processing
     my @value;
-    if ( defined($exit) ) {
-        while (1) {
+    while (1) {
 
-            # get values from the queue
-            {
-                lock( @{$queue} );
-                threads::shared::cond_wait @{$queue} until @{$queue};
-                @value=    @{$queue};
-                @{$queue}= ();
-            }
-
-            # process all queue elements
-            foreach my $value (@value) {
-        	    my @set= @{ Storable::thaw($value) };
-
-                # we're done
-                return $post->(@_)
-                  if $set[0] eq $exit;
-
-                # continue monitoring
-                $monitor->(@set);
-            }
+        # get values from the queue
+        {
+            lock( @{$queue} );
+            threads::shared::cond_wait @{$queue} until @{$queue};
+            @value=    @{$queue};
+            @{$queue}= ();
         }
-    }
 
-    # exit value is undef
-    else {
-        while (1) {
+        # process all queue elements
+        foreach my $value (@value) {
+            my @set= @{ $THAW->($value) };
 
-            # get values from the queue
-            {
-                lock( @{$queue} );
-                threads::shared::cond_wait @{$queue} until @{$queue};
-                @value=    @{$queue};
-                @{$queue}= ();
-            }
+            # we're done by specific exit code
+            return $post->(@_)
+              if $set[0] ~~ $exit;
 
-            # process all queue elements
-            foreach my $value (@value) {
-        	    my @set= @{ Storable::thaw($value) };
-
-                # we're done
-                return $post->(@_)
-                  if !defined( $set[0] );
-
-                # continue monitoring
-                $monitor->(@set);
-            }
+            # continue monitoring
+            $monitor->(@set);
         }
     }
 } #_monitor
@@ -154,20 +127,22 @@ Thread::Queue::Any::Monitored - monitor a queue for any specific content
 
     $queue= Thread::Queue::Any::Monitored->self; # "pre", "do", "post"
 
+    # specify class with "freeze" and "thaw" methods
+    use Thread::Queue::Any::Monitored serializer => 'Storable';
+
+    # specify custom freeze and thaw subroutines
+    use Thread::Queue::Any::Monitored freeze => \&solid, thaw => \&liquid;
+
 =head1 VERSION
 
-This documentation describes version 0.13.
+This documentation describes version 1.03.
 
 =head1 DESCRIPTION
 
                     *** A note of CAUTION ***
 
- This module only functions on threaded perl or an unthreaded perl
- with the "forks" module installed.
-
- Please also note that this documentation describes the "maint" version
- of this code.  This version is essentially frozen.  Please use a 5.14
- or higher version of perl for the "blead" version of this code.
+ This module only functions if threading has been enabled when building
+ Perl, or if the "forks" module has been installed on an unthreaded Perl.
 
                     *************************
 
@@ -217,7 +192,7 @@ The following field B<must> be specified in the hash reference:
 
 =item do
 
- monitor => 'monitor_the_queue',	# assume caller's namespace
+ monitor => 'monitor_the_queue',           # assume caller's namespace
 
 or:
 
@@ -249,7 +224,7 @@ The following fields are B<optional> in the hash reference:
 
 =item pre
 
- pre => 'prepare_monitoring',		# assume caller's namespace
+ pre => 'prepare_monitoring',              # assume caller's namespace
 
 or:
 
@@ -273,7 +248,7 @@ The specified subroutine should expect the following parameters to be passed:
 
 =item post
 
- post => 'stop_monitoring',		# assume caller's namespace
+ post => 'stop_monitoring',                # assume caller's namespace
 
 or:
 
@@ -334,10 +309,46 @@ The C<enqueue> method adds all specified parameters as a set on to the end
 of the queue.  The queue will grow as needed to accommodate the list.  If the
 "exit" value is passed, then the monitoring thread will shut itself down.
 
+=head1 USING ANOTHER SERIALIZER
+
+Please see the section C<USING ANOTHER SERIALIZER> in L<Thread::Queue::Any>
+for a description of the options for using specific data serializers.
+
 =head1 REQUIRED MODULES
 
- Thread::Queue::Any (0.16)
- Thread::Queue::Monitored (0.14)
+ Test::More (0.88)
+ Thread::Queue::Any (1.13)
+ Thread::Queue::Monitored (1.04)
+
+=head1 INSTALLATION
+
+This distribution contains two versions of the code: one maintenance version
+for versions of perl < 5.014 (known as 'maint'), and the version currently in
+development (known as 'blead').  The standard build for your perl version is:
+
+ perl Makefile.PL
+ make
+ make test
+ make install
+
+This will try to test and install the "blead" version of the code.  If the
+Perl version does not support the "blead" version, then the running of the
+Makefile.PL will *fail*.  In such a case, one can force the installing of
+the "maint" version of the code by doing:
+
+ perl Makefile.PL maint
+
+Alternately, if you want automatic selection behavior, you can set the
+AUTO_SELECT_MAINT_OR_BLEAD environment variable to a true value.  On Unix-like
+systems like so:
+
+ AUTO_SELECT_MAINT_OR_BLEAD=1 perl Makefile.PL
+
+If your perl does not support the "blead" version of the code, then it will
+automatically install the "maint" version of the code.
+
+Please note that any additional parameters will simply be passed on to the
+underlying Makefile.PL processing.
 
 =head1 CAVEATS
 

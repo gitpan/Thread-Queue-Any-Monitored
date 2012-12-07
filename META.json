@@ -32,11 +32,12 @@
       },
       "runtime" : {
          "requires" : {
-            "Thread::Queue::Any" : "0.16",
-            "Thread::Queue::Monitored" : "0.14"
+            "Test::More" : "0.88",
+            "Thread::Queue::Any" : "1.13",
+            "Thread::Queue::Monitored" : "1.04"
          }
       }
    },
    "release_status" : "stable",
-   "version" : "0.13"
+   "version" : "1.03"
 }
