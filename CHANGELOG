@@ -1,3 +1,8 @@
+1.03    7 December 2012
+        Upgraded to Devel::MaintBlead 0.08.  This should fix the problem as
+        reported in https://rt.cpan.org/Ticket/Display.html?id=81354 by
+        Justin Traer.  Also upgraded the maint version to 0.13.
+
 1.02    6 June 2012
         Fixed problem in test-suite that hard depended on Thread::Serialize
         being installed.  Spotted by Chris Williams (BINGOS) through

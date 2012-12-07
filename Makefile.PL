@@ -14,8 +14,8 @@ eval "use Devel::Required maint_blead => $REQUIRED";
 
 # set up prerequisites
 my @prereq_pm= (
-  'Thread::Queue::Any'       => $MAINT ? '0.13' : '1.11',
-  'Thread::Queue::Monitored' => $MAINT ? '0.12' : '1.02',
+  'Thread::Queue::Any'       => $MAINT ? '0.16' : '1.13',
+  'Thread::Queue::Monitored' => $MAINT ? '0.14' : '1.04',
 );
 push @prereq_pm, (
   'Test::More' => 0.88,
